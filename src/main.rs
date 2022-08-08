@@ -36,10 +36,10 @@ fn main() -> Result<()> {
     // Run the instances
     let mut index = 1;
     for instance in instances.iter() {
-        let f = instance.get_typed_func::<(), (), _>(&mut store, "run")?;
+        let f = instance.get_typed_func::<i32, (), _>(&mut store, "run")?;
         println!("Calling export...{}", index);
+        f.call(&mut store, index)?;
         index += 1;
-        f.call(&mut store, ())?;
     }
     
     Ok(())
