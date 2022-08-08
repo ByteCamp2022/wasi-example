@@ -31,7 +31,7 @@ fn main() -> Result<()> {
     let f = instance.get_typed_func::<(), (), _>(&mut store, "run")?;
     
     println!("Calling export...");
-    f.call(&mut store, ());
+    f.call(&mut store, ())?;
 
     
     Ok(())
