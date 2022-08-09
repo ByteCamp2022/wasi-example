@@ -3,7 +3,6 @@ use wasmtime::*;
 use wasmtime_wasi::sync::WasiCtxBuilder;
 
 // 实际上引入多个modules并不麻烦，这段代码主要是引入多个modules，实例化之后用vector存储了一下
-// WASI还有linker是非必需的（in other words, 它们和引入多个modules并没有什么关系）
 pub fn multi_modules() -> Result<()> {
     println!("running multi modules example...");
 

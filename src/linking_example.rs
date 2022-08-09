@@ -6,6 +6,8 @@ use anyhow::Result;
 use wasmtime::*;
 use wasmtime_wasi::sync::WasiCtxBuilder;
 
+// wasmtime文档中抄的例字，用于模块间相互调用的方式
+// https://docs.wasmtime.dev/examples-c-linking.html
 pub fn linking_modules() -> Result<()> {
     println!("running linking modules example...");
 
