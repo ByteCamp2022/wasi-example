@@ -1,10 +1,8 @@
-#[no_mangle]
-pub extern "C" fn run(i: i32) {   
-    println!("running module {}", i);
-}
-
+#![allow(unused)]
 fn main() {
-    println!("Hello, world2!");
+    #[no_mangle]
+    pub extern "C" fn run(i: i32) {   
+        println!("2. running module {}", i);
+    }
 }
-
 
