@@ -1,9 +1,9 @@
 use anyhow::Result;
 use wasmtime::*;
-
-struct MyState {
-    counter: i32,
-}
+use wasmtime_wasi::{sync::WasiCtxBuilder, WasiCtx};
+// struct MyState {
+//     counter: i32,
+// }
 
 // 一段最简单的rust调用wasm的example
 pub fn basic() -> Result<()> {
@@ -11,15 +11,20 @@ pub fn basic() -> Result<()> {
     
     let engine = Engine::default();
     let module = Module::from_file(&engine, "basic.wasm")?;
-    let mut store = Store::new(&engine, MyState { counter: 0 });
+    let mut linker = Linker::new(&engine);
+    let wasi = WasiCtxBuilder::new()
+        .inherit_stdio()
+        .inherit_args()?
+        .build();
+    let mut store = Store::new(&engine, wasi);
 
-    let host_fn = Func::wrap(&mut store, |caller: Caller<'_, MyState>, param: i32| {
+    wasmtime_wasi::add_to_linker(&mut linker, |s| s)?;
+    linker.func_wrap("host", "host_fn", |_: Caller<'_, WasiCtx>, param: i32| {
         println!("Host received {} from wasm", param);
-        println!("My host counter is: {}", caller.data().counter);
-    });
+    })?;
+    
 
-    let imports = [host_fn.into()];
-    let instance = Instance::new(&mut store, &module, &imports)?;
+    let instance = linker.instantiate(&mut store, &module)?;
     let func = instance.get_typed_func::<i32, (), _>(&mut store, "run")?;
 
     println!("Calling wasi");
