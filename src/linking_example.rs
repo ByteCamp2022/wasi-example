@@ -7,6 +7,8 @@ use wasmtime::*;
 use wasmtime_wasi::sync::WasiCtxBuilder;
 
 pub fn linking_modules() -> Result<()> {
+    println!("running linking modules example...");
+
     let engine = Engine::default();
 
     // First set up our linker which is going to be linking modules together. We
@@ -40,5 +42,7 @@ pub fn linking_modules() -> Result<()> {
     println!("calling linking1 which will call linking2 in it");
     let run = linking1.get_typed_func::<(), (), _>(&mut store, "run")?;
     run.call(&mut store, ())?;
+
+    println!();
     Ok(())
 }

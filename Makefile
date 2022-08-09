@@ -1,4 +1,5 @@
 build:
+	rustc wasm/basic.rs --target wasm32-wasi
 	rustc wasm/wasi.rs --target wasm32-wasi
 	rustc wasm/wasi2.rs --target wasm32-wasi
 	rustc wasm/linking1.rs --target wasm32-wasi
