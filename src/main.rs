@@ -1,38 +1,21 @@
-use anyhow::Result;
-use wasmtime::*;
-use wasmtime_wasi::sync::WasiCtxBuilder;
+mod basic_example;
+use basic_example::basic;
+mod multi_modules_example;
+use multi_modules_example::multi_modules;
+mod linking_example;
+use linking_example::linking_modules;
+mod hostcall_example;
+use hostcall_example::hostcall;
+use anyhow::{Result, Ok};
 
 fn main() -> Result<()> {
-    // Define the WASI functions globally on the `Config`.
-    let engine = Engine::default();
-    let mut linker = Linker::new(&engine);
-    wasmtime_wasi::add_to_linker(&mut linker, |s| s)?;
+    basic()?;
 
-    // Create a WASI context and put it in a Store; all instances in the store
-    // share this context. `WasiCtxBuilder` provides a number of ways to
-    // configure what the target program will have access to.
-    let wasi = WasiCtxBuilder::new()
-        .inherit_stdio()
-        .inherit_args()?
-        .build();
-    let mut store = Store::new(&engine, wasi);
+    multi_modules()?;
 
-    // Instantiate our module with the imports we've created, and run it.
-    let module = Module::from_file(&engine, "wasi.wasm")?;
-    linker.module(&mut store, "", &module)?;
-    linker
-        .get_default(&mut store, "")?
-        .typed::<(), (), _>(&store)?
-        .call(&mut store, ())?;
+    linking_modules()?;
 
+    hostcall()?;
 
-    let instance = linker.instantiate(&mut store, &module)?;
-
-    let f = instance.get_typed_func::<(), (), _>(&mut store, "run")?;
-    
-    println!("Calling export...");
-    f.call(&mut store, ())?;
-
-    
     Ok(())
 }
